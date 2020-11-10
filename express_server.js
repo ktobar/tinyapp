@@ -22,9 +22,25 @@ app.get("/urls", (req,res)=> {
   res.render("urls_index", templateVars);
 })
 
+// app.post("/urls", (req, res)=> {
+//   console.log(req.body);
+//   res.send("Ok");
+// })
+
+app.get("/u/:shortURL", (req, res)=> {
+  let shortURL = req.params.shortURL 
+  let longURL = urlDatabase[shortURL];
+  res.redirect(longURL);
+})
+
 app.post("/urls", (req, res)=> {
+  const url = req.body;
+  let bigURL = url.longURL
+  let ranId = generateRandomString();
   console.log(req.body);
-  res.send("Ok");
+  urlDatabase[ranId] = bigURL
+  console.log(urlDatabase)
+  res.redirect(`/urls/${ranId}`);
 })
 
 app.get("/urls/new", (req,res)=> {
