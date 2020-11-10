@@ -42,6 +42,13 @@ app.get("/urls/new", (req,res)=> {
   res.render("urls_new");
 });
 
+app.post("/urls/:shortURL/edit", (req, res)=> {
+  let sUrl = req.params.shortURL
+  console.log(req.body)
+  urlDatabase[sUrl] = req.body.newUrl
+  res.redirect(`/urls`)
+});
+
 app.post("/urls/:shortURL/delete", (req, res)=> {
   let url = req.params.shortURL
   delete urlDatabase[url]
