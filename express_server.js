@@ -98,19 +98,24 @@ app.get("/urls/:shortURL", (req,res)=> {
   res.render("urls_show", templateVars);
 });
 
+
+app.get("/register", (req, res) => {
+  const templateVars = {
+    username: req.cookies["user_id"]
+  };
+  res.render("urls_registration", templateVars)
+})
+
+app.get("/login", (req,res)=>{
+  res.render('urls_login')
+})
+
 app.post("/login", (req, res)=> {
-  let user = req.body.username;
+  let user = req.body.email;
   res.cookie('username', user);
   
   res.redirect("/urls");
 });
-
-app.get("/register", (req, res) => {
-  const templateVars = {
-  username: req.cookies["user_id"]
-};
-  res.render("urls_registration", templateVars)
-})
 ////////////////////////////////////////////////////////////////
 app.post("/register", (req,res)=> {
   let ranUserId = generateRandomString()
