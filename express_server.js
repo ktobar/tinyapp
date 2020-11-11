@@ -27,6 +27,16 @@ const users = {
   }
 }
 
+const emailCheck = (database, email)=> {
+  for (let user in database) {
+    console.log(user)
+    if(database[user].email === email){
+      return true
+    }
+  }
+  return false
+}
+
 const generateRandomString = ()=> {
   const result = Math.random().toString(36).substring(2,8);
   return result;
@@ -101,10 +111,22 @@ app.get("/register", (req, res) => {
 };
   res.render("urls_registration", templateVars)
 })
-////////
+////////////////////////////////////////////////////////////////
 app.post("/register", (req,res)=> {
   let ranUserId = generateRandomString()
+  console.log(req.body)
+  if(req.body.email.length === 0 || req.body.password.length === 0) {
+    console.log('firsterror')
+    return res.status(400).send('<h2>Empty Input</h2>')
+  }
   const {email, password} = req.body
+  console.log(`usersdb; ${users} , email: ${email}`)
+  
+  if(emailCheck(users, email)){
+    console.log('2nderror')
+    return res.status(400).send('<h2>Email already used</h2>')
+  }
+
   users[ranUserId] = {id: ranUserId, email, password}
   res.cookie("user_id", users[ranUserId]);
 
