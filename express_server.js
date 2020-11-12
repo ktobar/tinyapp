@@ -3,28 +3,38 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080;
+const bcrypt = require('bcrypt');
 
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 
 app.set("view engine", "ejs");
 
+const saltRounds = 10; //bcrypt rounds
+
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "blahblah" },
-  idsfsd: { longURL: "https://www.reddit.com", userID: "blahblah" }
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "6znqm0" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "3wm315" },
+  idsfsd: { longURL: "https://www.reddit.com", userID: "3wm315" }
 };
 
 const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+  // "userRandomID": {
+  //   id: "userRandomID",
+  //   email: "user@example.com",
+  //   password: "purple-monkey-dinosaur"
+  // },
+  '3wm315':
+  { id: '3wm315',
+    email: 'my@my.my',
+    password:
+     '$2b$10$C8fepUyUF7CltMmdNwXW7OqO3ulQPo7/5Moce5g6Co4nvyZRuP3IK' 
   },
-  "blahblah": {
-    id: "blahblah",
-    email: "my@my.my",
-    password: "my"
+  '6znqm0': { 
+    id: '6znqm0',
+    email: 'go@go.com',
+    password:
+     '$2b$10$Z8sdaLtureVa4AxCSrcu6uk..ty1AObBzUT78fhmvrJyrup/4PwIi'
   }
 };
 
@@ -32,7 +42,9 @@ const checkEmailPass = (database, email, password)=>{
   for (let user in database) {
     console.log(user);
     if (database[user].email === email) {
-      if (database[user].password === password) {
+
+      console.log('bcrypt :', bcrypt.compareSync(password, database[user].password))
+      if (bcrypt.compareSync(password, database[user].password)) {
         return {error: null, user};
       } else {
         return {error: "password", user: null};
@@ -201,8 +213,10 @@ app.post("/register", (req,res)=> {
     console.log('2nderror');
     return res.status(400).send('<h2>Email already used</h2>');
   }
+  const hashedPassword = bcrypt.hashSync(password, saltRounds);
 
-  users[ranUserId] = {id: ranUserId, email, password};
+  users[ranUserId] = {id: ranUserId, email, password: hashedPassword};
+  console.log('regitered', users)
   res.cookie("user_id", users[ranUserId]);
 
   res.redirect("/register");
